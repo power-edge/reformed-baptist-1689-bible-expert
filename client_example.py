@@ -3,7 +3,8 @@ import requests
 import json
 
 # MLServer endpoint
-BASE_URL = "http://localhost:8080/v2/models/reformed-baptist-bible-expert"
+BASE_URL = "http://localhost:8080/v2/models/reformed-baptist-1689-bible-expert"
+MAX_TOKENS = 2 ** 9
 
 
 def text_completion_example():
@@ -21,7 +22,7 @@ def text_completion_example():
                 "name": "parameters",
                 "shape": [1],
                 "datatype": "BYTES",
-                "data": [json.dumps({"max_tokens": 256, "temperature": 0.7})],
+                "data": [json.dumps({"max_tokens": MAX_TOKENS, "temperature": 0.7})],
             },
         ]
     }
@@ -41,7 +42,7 @@ def chat_completion_example():
     """Example of chat completion"""
 
     messages = [
-        {"role": "system", "content": "You are a concise biblical scholar."},
+#        {"role": "system", "content": "You are a concise biblical scholar."},
         {"role": "user", "content": "What does the Bible say about selflessness?"},
     ]
 
@@ -57,7 +58,7 @@ def chat_completion_example():
                 "name": "parameters",
                 "shape": [1],
                 "datatype": "BYTES",
-                "data": [json.dumps({"max_tokens": 256, "temperature": 0.7})],
+                "data": [json.dumps({"max_tokens": MAX_TOKENS, "temperature": 0.7})],
             },
         ]
     }
@@ -78,3 +79,4 @@ if __name__ == "__main__":
 
     print("\nTesting chat completion...")
     chat_completion_example()
+
