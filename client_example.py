@@ -3,7 +3,7 @@ import requests
 import json
 
 # MLServer endpoint
-BASE_URL = "http://localhost:8080/v2/models/reformed-baptist-1689-bible-expert"
+BASE_URL = "http://localhost:8080/v2/models/reformed-baptist-1689-bible-expert/versions/v0.1.0"
 MAX_TOKENS = 2 ** 9
 
 
