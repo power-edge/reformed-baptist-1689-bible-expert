@@ -3,8 +3,10 @@ import requests
 import json
 
 # MLServer endpoint
-BASE_URL = "http://localhost:8080/v2/models/reformed-baptist-1689-bible-expert/versions/v0.1.0"
-MAX_TOKENS = 2 ** 9
+BASE_URL = (
+    "http://localhost:8080/v2/models/reformed-baptist-1689-bible-expert/versions/v0.1.0"
+)
+MAX_TOKENS = 2**9
 
 
 def text_completion_example():
@@ -42,7 +44,7 @@ def chat_completion_example():
     """Example of chat completion"""
 
     messages = [
-#        {"role": "system", "content": "You are a concise biblical scholar."},
+        #        {"role": "system", "content": "You are a concise biblical scholar."},
         {"role": "user", "content": "What does the Bible say about selflessness?"},
     ]
 
@@ -79,4 +81,3 @@ if __name__ == "__main__":
 
     print("\nTesting chat completion...")
     chat_completion_example()
-

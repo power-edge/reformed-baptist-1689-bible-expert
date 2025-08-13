@@ -22,25 +22,105 @@ class LlamaMLServerModel(MLModel):
         """
         Load the Llama model when MLServer starts
         """
-        # Initialize the Llama model
+        # Get model configuration from settings
+        model_config = self._get_model_config()
+
+        # Load from Hugging Face
         self.llm = Llama.from_pretrained(
-            repo_id="mradermacher/Reformed-Baptist-1689-Bible-Expert-v3.0-12B-i1-GGUF",
-            filename="Reformed-Baptist-1689-Bible-Expert-v3.0-12B.i1-Q4_K_M.gguf",
-            n_ctx=4096,  # context window
-            n_threads=8,  # adjust based on your CPU
-            n_gpu_layers=0,  # set >0 if you have CUDA build
+            repo_id=model_config["repo_id"],
+            filename=model_config["filename"],
+            **model_config.get("llama_params", {}),
         )
 
-        # Set default generation parameters
-        self.default_params = {
-            "max_tokens": 256,
-            "temperature": 0.7,
-            "top_p": 0.95,
-            "top_k": 40,
-        }
+        # Set default generation parameters from config
+        self.default_params = model_config.get(
+            "generation_params",
+            {
+                "max_tokens": 256,
+                "temperature": 0.7,
+                "top_p": 0.95,
+                "top_k": 40,
+            },
+        )
 
         self.ready = True
         return self.ready
+
+    def _get_model_config(self) -> Dict[str, Any]:
+        """
+        Extract model configuration from MLServer settings with deep merge of defaults
+        """
+        # Default configuration with comprehensive defaults
+        default_config = {
+            "repo_id": "mradermacher/Reformed-Baptist-1689-Bible-Expert-v3.0-12B-i1-GGUF",
+            "filename": "Reformed-Baptist-1689-Bible-Expert-v3.0-12B.i1-Q4_K_M.gguf",
+            "llama_params": {
+                "n_ctx": 4096,
+                "n_threads": 8,
+                "n_gpu_layers": 0,
+                "n_batch": 512,
+                "verbose": False,
+                "use_mlock": False,
+                "use_mmap": True,
+                "rope_freq_base": 10000.0,
+                "rope_freq_scale": 1.0,
+                "logits_all": False,
+                "embedding": False,
+                "offload_kqv": True,
+                "last_n_tokens_size": 64,
+                "seed": -1,
+                "f16_kv": True,
+                "low_vram": False,
+            },
+            "generation_params": {
+                "max_tokens": 256,
+                "temperature": 0.7,
+                "top_p": 0.95,
+                "top_k": 40,
+                "repeat_penalty": 1.1,
+                "frequency_penalty": 0.0,
+                "presence_penalty": 0.0,
+                "tfs_z": 1.0,
+                "typical_p": 1.0,
+                "mirostat_mode": 0,
+                "mirostat_tau": 5.0,
+                "mirostat_eta": 0.1,
+                "stop": [],
+                "seed": -1,
+                "logprobs": None,
+                "echo": False,
+                "suffix": None,
+            },
+        }
+
+        # Deep merge user configuration with defaults
+        if hasattr(self.settings, "parameters") and self.settings.parameters:
+            config = self._deep_merge_config(default_config, self.settings.parameters)
+            return config
+
+        return default_config
+
+    def _deep_merge_config(
+        self, default: Dict[str, Any], override: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Deep merge configuration dictionaries, preserving individual parameter defaults
+        """
+        result = default.copy()
+
+        for key, value in override.items():
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
+                # Deep merge nested dictionaries (llama_params, generation_params)
+                result[key] = self._deep_merge_config(result[key], value)
+            else:
+                # Direct assignment for non-dict values
+                result[key] = value
+
+        return result
 
     async def predict(self, payload: InferenceRequest) -> InferenceResponse:
         """
