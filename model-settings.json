@@ -1,6 +1,6 @@
 {
   "name": "reformed-baptist-1689-bible-expert",
-  "implementation": "model.LlamaMLServerModel",
+  "implementation": "models.LlamaMLServerModel",
   "parameters": {
     "uri": "./models.py",
     "version": "v0.1.0",
