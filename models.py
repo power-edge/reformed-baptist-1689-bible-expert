@@ -95,7 +95,26 @@ class LlamaMLServerModel(MLModel):
 
         # Deep merge user configuration with defaults
         if hasattr(self.settings, "parameters") and self.settings.parameters:
-            config = self._deep_merge_config(default_config, self.settings.parameters)
+            # Convert ModelParameters to dict using model_dump() or dict()
+            try:
+                # Try pydantic v2 method first
+                parameters_dict = self.settings.parameters.model_dump()
+            except AttributeError:
+                try:
+                    # Try pydantic v1 method
+                    parameters_dict = self.settings.parameters.dict()
+                except AttributeError:
+                    # Fallback: convert to dict manually
+                    parameters_dict = {}
+                    for field_name in dir(self.settings.parameters):
+                        if not field_name.startswith("_") and hasattr(
+                            self.settings.parameters, field_name
+                        ):
+                            field_value = getattr(self.settings.parameters, field_name)
+                            if not callable(field_value):
+                                parameters_dict[field_name] = field_value
+
+            config = self._deep_merge_config(default_config, parameters_dict)
             return config
 
         return default_config
