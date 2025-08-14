@@ -1,5 +1,5 @@
 __pycache__
-app.egg-info
+*.egg-info/
 *.pyc
 .mypy_cache
 .coverage
@@ -15,3 +15,4 @@ htmlcov
 venv
 .venv
 .metrics/
+.idea/
