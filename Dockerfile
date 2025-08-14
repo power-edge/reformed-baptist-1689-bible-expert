@@ -1,4 +1,3 @@
-
 FROM continuumio/miniconda3:23.5.2-0 AS env-builder
 SHELL ["/bin/bash", "-c"]
 
@@ -46,6 +45,14 @@ COPY \
     .
 
 USER root
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    clang \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies system-wide, to ensure that they are available for every
 # user and give permissions to (future) environment folder.
 RUN ./hack/build-env.sh . && \
