@@ -1,1 +1,12 @@
-.metrics
+*.egg-info/
+*.pyc
+.cache
+.coverage
+.idea/
+.metrics/
+.mypy_cache
+.venv
+__pycache__
+app.egg-info
+htmlcov
+venv
