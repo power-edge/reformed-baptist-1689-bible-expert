@@ -79,5 +79,5 @@ if __name__ == "__main__":
     print("Testing text completion...")
     text_completion_example()
 
-    print("\nTesting chat completion...")
-    chat_completion_example()
+#    print("\nTesting chat completion...")
+#    chat_completion_example()

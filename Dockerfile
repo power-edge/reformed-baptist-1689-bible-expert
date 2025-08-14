@@ -46,15 +46,11 @@ COPY \
 
 USER root
 
-# Install build dependencies
-#RUN apt-get update && apt-get install -y \
-#    build-essential \
-#    cmake \
-#    clang \
-#    && rm -rf /var/lib/apt/lists/*
-
 # Install dependencies system-wide, to ensure that they are available for every
 # user and give permissions to (future) environment folder.
+ENV PIP_ROOT_USER_ACTION=ignore \
+    PIP_EXTRA_INDEX_URL=https://abetlen.github.io/llama-cpp-python/whl/cpu
+
 RUN ./hack/build-env.sh . && \
     mkdir -p ./envs/base && \
     chown -R 1000:0 ./envs/base && \
